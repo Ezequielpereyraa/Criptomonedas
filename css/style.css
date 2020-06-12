@@ -109,3 +109,14 @@ form {
         -webkit-transform: scaleY(1.0);
     }
 }
+
+footer {
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    font-family: 'Verdana';
+    position: fixed;
+    left: 0;
+    bottom: 2rem;
+    right: 0;
+}
