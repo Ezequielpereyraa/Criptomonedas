@@ -1,56 +1,62 @@
-const resultado = document.querySelector('.mensajes');
-/////////
-class Interfaz {
-  mostrarMensaje(mensaje, clases) {
-    const div = document.createElement('div');
-    div.className = clases;
-    div.textContent = mensaje;
-    resultado.appendChild(div);
+
+import API from './api.js';
+const key = '7914426df3f3df04af42d1309149e6c6e0822218b73159ac01fa40cf1da45a5a';
+const cotizadorApi = new API(key);
+const messageHtml = document.querySelector('.mensajes');
+export default class Interfaz {
+  showMessage(msg, clas) {
+    const divMessage = document.createElement('div');
+    divMessage.className = clas;
+    divMessage.textContent = msg;
+    messageHtml.appendChild(divMessage);
     setTimeout(() => {
-      div.remove();
-    }, 3000);
-  }
-  construirSelect() {
-    cotizador.obtenerMonedas().then((monedas) => {
-      Object.entries(monedas.Data).map((money) => {
-        const option = document.createElement('option');
-        option.value = money[1].Symbol;
-        option.textContent = money[1].CoinName;
-        document.querySelector('#criptomoneda').appendChild(option);
-      });
-      /*  for (const [key, value] of Object.entries(monedas.Data)) {
-        console.log(value);
-      } */
-    });
-  }
-  // importar resultados
-  mostrarResultado(resultado, moneda, cripto) {
-    const resultadoAnterior = document.querySelector('#resultado > div');
-    if (resultadoAnterior) {
-      resultadoAnterior.remove()
-    }
-    const datosMoneda = resultado[cripto][moneda];
-    let precio = datosMoneda.PRICE.toFixed(2)
-    let cambioPor = datosMoneda.CHANGEPCTDAY.toFixed(2)
-    let actualizado = new Date(datosMoneda.LASTUPDATE * 1000).toLocaleDateString('es-AR');
-    let templateHTML = `
-    <div class="card bg-warning">
-      <div class="card-body text-light">
-      <h2 class="card-title">Resultado:</h2>
-      <p> Cotizacion de ${datosMoneda.FROMSYMBOL} a moneda ${datosMoneda.TOSYMBOL} es de: $${precio}</p>
-      <p>Variacion ultimo dia: %${cambioPor}</p>
-      <p>Ultima actualizacion fue ${actualizado}</p>
-      </div>
-    </div>
-    `
-    this.mostrarOcultarSpiner('block')
-    setTimeout(() => {
-      document.querySelector('#resultado').innerHTML = templateHTML;
-      this.mostrarOcultarSpiner('none')
+      divMessage.remove()
     }, 3000)
   }
-  mostrarOcultarSpiner(vista) {
-    const spiner = document.querySelector('.contenido-spinner');
-    spiner.style.display = vista
+  createOption() {
+    cotizadorApi.getMoney()
+      .then((data) => {
+        let resultData = data.Data;
+        Object.entries(resultData).map((money) => {
+          const option = document.createElement('option');
+          option.textContent = money[1].FullName;
+          option.value = money[1].Symbol;
+          document.querySelector('#criptomoneda').appendChild(option)
+        })
+      })
   }
+  showResult(moneySelect, criptoSelect) {
+    const resulLast = document.querySelector('#resultado > div');
+    if (resulLast) {
+      resulLast.remove();
+    }
+    let resultHtml = '';
+    cotizadorApi.getValue(moneySelect, criptoSelect)
+      .then((data) => {
+        Object.entries(data.RAW).map((datos) => {
+          const money = datos[1][moneySelect];
+          const precio = money.PRICE.toFixed(2);
+          const actual = money.CHANGEPCTDAY.toFixed(2);
+          resultHtml = `
+          <div class="card bg-success">
+          <div class="card-body text-light ">
+          <h3 class=""card-title>Resultado:</h3>
+          <p>Cotizacion de ${money.FROMSYMBOL} a moneda ${money.TOSYMBOL} es de $${precio} </p>
+          <p>Ultima Actualizacion fue del ${actual}%</p>
+          </div>
+          </div>
+          `;
+          setTimeout(() => {
+            document.querySelector('#resultado').innerHTML = resultHtml;
+            this.showSpiner('none')
+          }, 4000);
+        })
+      }
+      )
+  }
+  showSpiner(state) {
+    const contentSpiner = document.querySelector('.contenido-spinner');
+    contentSpiner.style.display = state;
+  }
+
 }
