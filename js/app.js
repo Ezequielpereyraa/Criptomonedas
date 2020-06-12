@@ -1,21 +1,22 @@
-const cotizador = new Api(
-  '7914426df3f3df04af42d1309149e6c6e0822218b73159ac01fa40cf1da45a5a'
-);
-const mostrarMsj = new Interfaz(); // Leer Formulario
-const formulario = document.querySelector('#formulario');
-mostrarMsj.construirSelect();
-formulario.addEventListener('submit', (e) => {
+import Interfaz from './interfaz.js';
+//selected option and value
+const interfaz = new Interfaz();
+// function create options
+interfaz.createOption();
+//selected form
+const form = document.querySelector('#formulario');
+form.addEventListener('submit', (e) => {
   e.preventDefault();
-  const selectMoneda = document.querySelector('#moneda').value;
-  const selectCripto = document.querySelector('#criptomoneda').value;
-  if (selectMoneda === '' && selectCripto === '') {
-    mostrarMsj.mostrarMensaje(
-      'Ambos campos obligatorios',
-      'alert alert-danger text-center'
-    );
+  //selected option and value
+  const moneySelect = document.querySelector('#moneda').value;
+  const criptoSelect = document.querySelector('#criptomoneda').value
+  // Validate Form
+  if (moneySelect === '' && criptoSelect === '') {
+    interfaz.showMessage('Ambos cambos son Obligatorios', 'alert alert-danger text-center');
   } else {
-    cotizador.obtenerValores(selectMoneda, selectCripto).then((data) => {
-      mostrarMsj.mostrarResultado(data.RAW, selectMoneda, selectCripto);
-    });
+    interfaz.showResult(moneySelect, criptoSelect);
+    interfaz.showSpiner('block')
   }
 });
+
+
