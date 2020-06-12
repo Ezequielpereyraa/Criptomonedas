@@ -1,4 +1,4 @@
-import Interfaz from './interfaz.js';
+import Interfaz from './ui.js';
 //selected option and value
 const interfaz = new Interfaz();
 // function create options
